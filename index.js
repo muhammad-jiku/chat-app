@@ -5,6 +5,10 @@ const mongoose = require('mongoose');
 const { urlencoded } = require('express');
 const path = require('path');
 const cookieParser = require('cookie-parser');
+const moment = require('moment');
+const http = require('http');
+
+// internal imports
 const logInRouter = require('./router/logInRouter');
 const usersRouter = require('./router/usersRouter');
 const inboxRouter = require('./router/inboxRouter');
@@ -16,7 +20,15 @@ const {
 } = require('./middleware/common/errorHandler');
 
 const app = express();
+const server = http.createServer(app);
 dotenv.config();
+
+// socket creation
+const io = require('socket.io')(server);
+global.io = io;
+
+// set comment as app locals
+app.locals.moment = moment;
 
 // database connection
 mongoose
@@ -55,6 +67,6 @@ app.use(notFoundErrorHandler);
 // common error handler middleware
 app.use(errorHandler);
 
-app.listen(process.env.PORT, () => {
-  console.log(`server running at ${process.env.PORT}`);
+server.listen(process.env.PORT, () => {
+  console.log(`server running at http://localhost:${process.env.PORT}`);
 });
