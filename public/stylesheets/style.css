@@ -282,6 +282,7 @@ input[type='submit']:active {
   max-width: 1000px;
   width: 100%;
   height: calc(100vh - 70px);
+  /* height: calc(100vh); */
   background: var(--primary);
   border-radius: 10px;
 }
@@ -574,7 +575,8 @@ input[type='submit']:active {
   /* min-width: 800px; */
   max-width: 1000px;
   width: 100%;
-  height: calc(100vh - 70px);
+  /* height: calc(100vh - 70px); */
+  height: calc(100vh);
   background: var(--primary);
   border-radius: 10px;
   grid-template-areas:
@@ -601,6 +603,7 @@ input[type='submit']:active {
   align-items: center;
   gap: 20px;
   grid-area: branding;
+  padding: 10px;
 }
 
 #branding h1 {
@@ -635,7 +638,7 @@ input[type='submit']:active {
 @media only screen and (max-width: 600px) {
   #login-container {
     width: 80%;
-    height: 80vh;
+    /* height: 80vh; */
     grid-template-areas:
       'branding'
       'login-form';
@@ -777,4 +780,40 @@ input[type='submit']:active {
     var(--blue) 100%
   );
   background: linear-gradient(to right, var(--green) 0%, var(--blue) 100%);
+}
+
+/* Add to public/stylesheets/style.css */
+.auth-links {
+  text-align: center;
+  margin-top: 15px;
+  font-size: 14px;
+}
+
+.auth-links a {
+  color: #2c3e50;
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.auth-links a:hover {
+  color: var(--green);
+  text-decoration: underline;
+}
+
+/* Error message styling */
+.error {
+  color: #e74c3c;
+  font-size: 12px;
+  margin: 5px 0;
+  display: none;
+}
+
+.show {
+  display: block !important;
+}
+
+/* Add to CSS */
+.btn-primary:disabled {
+  background: #bdc3c7;
+  cursor: not-allowed;
 }

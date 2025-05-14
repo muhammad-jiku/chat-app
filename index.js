@@ -10,6 +10,7 @@ const http = require('http');
 
 // internal imports
 const logInRouter = require('./router/logInRouter');
+const registerRouter = require('./router/registerRouter');
 const usersRouter = require('./router/usersRouter');
 const inboxRouter = require('./router/inboxRouter');
 
@@ -32,7 +33,7 @@ app.locals.moment = moment;
 
 // database connection
 mongoose
-  .connect(process.env.MONGODB_CONNECTION_STRING, {
+  .connect(process.env.DB_URI, {
     useNewUrlParser: true,
     useUnifiedTopology: true,
   })
@@ -57,7 +58,8 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use(cookieParser(process.env.COOKIE_SECRET)); // to create cookieParser safe= 1. goto wprdpress salt genrator 2. to decrypte go to sha1 online
 
 // routing setup
-app.use('/', logInRouter);
+app.use('/', logInRouter); // Handles root path
+app.use('/register', registerRouter); // Needs to come AFTER root route
 app.use('/users', usersRouter);
 app.use('/inbox', inboxRouter);
 

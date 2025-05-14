@@ -13,8 +13,7 @@ const {
   addUsersValidator,
   addUsersValidationHandler,
 } = require('../middleware/users/usersValidator');
-
-const { checkLogIn, requireRole } = require('../middleware/common/checkLogin');
+const { checkLogIn, requireRole } = require('../middleware/common/checkLogIn');
 
 const router = express.Router();
 

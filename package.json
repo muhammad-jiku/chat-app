@@ -1,12 +1,12 @@
 {
-  "name": "6.chat-app-mern-project-ejs-validate.js-socket",
+  "name": "chat-app",
   "version": "1.0.0",
   "description": "This is Realtime Chat App",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "NODE_ENV=development nodemon index.js",
-    "prod": "NODE_ENV=production node index.js"
+    "start": "nodemon index.js",
+    "prod": "node index.js"
   },
   "repository": {
     "type": "git",

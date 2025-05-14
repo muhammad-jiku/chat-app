@@ -1,76 +1,62 @@
 const jwt = require('jsonwebtoken');
 const createError = require('http-errors');
 
-// auth guard to protect routes that need authentication
+// auth guard to protect authenticated routes
 const checkLogIn = (req, res, next) => {
-  let cookies =
+  const cookies =
     Object.keys(req.signedCookies).length > 0 ? req.signedCookies : null;
 
   if (cookies) {
     try {
-      token = cookies[process.env.COOKIE_NAME];
+      const token = cookies[process.env.COOKIE_NAME];
       const decoded = jwt.verify(token, process.env.JWT_SECRET);
       req.user = decoded;
 
-      // pass user info to response locals
       if (res.locals.html) {
         res.locals.loggedInUser = decoded;
       }
-      next();
+      return next();
     } catch (err) {
       if (res.locals.html) {
-        res.redirect('/');
-      } else {
-        res.status(500).json({
-          errors: {
-            common: {
-              msg: 'Authentication failure!',
-            },
-          },
-        });
+        return res.redirect('/');
       }
-    }
-  } else {
-    if (res.locals.html) {
-      res.redirect('/');
-    } else {
-      res.status(401).json({
-        error: 'Authetication failure!',
+      return res.status(500).json({
+        errors: { common: { msg: 'Authentication failure!' } },
       });
     }
   }
+
+  // no cookies
+  if (res.locals.html) {
+    return res.redirect('/');
+  }
+  return res.status(401).json({ error: 'Authentication failure!' });
 };
 
-// redirect already logged in user to inbox pabe
-const redirectLoggedIn = function (req, res, next) {
-  let cookies =
+// redirect already-logged-in users
+const redirectLoggedIn = (req, res, next) => {
+  const cookies =
     Object.keys(req.signedCookies).length > 0 ? req.signedCookies : null;
 
-  if (!cookies) {
-    next();
-  } else {
-    res.redirect('/inbox');
-  }
+  if (!cookies) return next();
+  return res.redirect('/inbox');
 };
 
-// guard to protect routes that need role based authorization
-function requireRole(role) {
-  return function (req, res, next) {
-    if (req.user.role && role.includes(req.user.role)) {
-      next();
-    } else {
-      if (res.locals.html) {
-        next(createError(401, 'You are not authorized to access this page!'));
-      } else {
-        res.status(401).json({
-          errors: {
-            common: {
-              msg: 'You are not authorized!',
-            },
-          },
-        });
-      }
+// role-based authorization guard
+function requireRole(allowedRoles) {
+  return (req, res, next) => {
+    if (req.user?.role && allowedRoles.includes(req.user.role)) {
+      return next();
     }
+
+    if (res.locals.html) {
+      return next(
+        createError(401, 'You are not authorized to access this page!')
+      );
+    }
+    return res.status(401).json({
+      errors: { common: { msg: 'You are not authorized!' } },
+    });
   };
 }
 
