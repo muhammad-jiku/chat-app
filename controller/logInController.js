@@ -82,18 +82,25 @@ async function logIn(req, res, next) {
 
 // do logout
 function logOut(req, res) {
-  // Apply the same options used when setting the cookie
+  // Set SameSite attribute to fix potential cookie issues
   res.clearCookie(process.env.COOKIE_NAME, {
     httpOnly: true,
     signed: true,
-    // If your cookie was set with a specific path
     path: '/',
+    sameSite: 'strict', // Helps with cookie security
   });
 
   console.log('Clearing cookie:', process.env.COOKIE_NAME);
 
-  // Redirect to login page instead of just sending text
-  res.redirect('/');
+  // Check if it's an AJAX request
+  if (
+    req.xhr ||
+    (req.headers.accept && req.headers.accept.includes('application/json'))
+  ) {
+    res.status(200).json({ success: true, message: 'Logged out successfully' });
+  } else {
+    res.redirect('/');
+  }
 }
 
 module.exports = {

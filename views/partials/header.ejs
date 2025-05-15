@@ -4,7 +4,7 @@
     <meta charset="UTF-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="author" content="Sumit Saha" />
+    <meta name="author" content="Muhammad Azizul Hoque Jiku" />
     <meta name="owner" content="learnwithsumit.com" />
     <title><%= title %></title>
     <link rel="shortcut icon" href="./images/favicon.png" />
@@ -43,13 +43,37 @@
       });
 
       function logout() {
-        fetch('/', {
-          method: 'DELETE',
-        });
+        // Show logout toast
         logoutToast.showToast();
-        setTimeout(() => {
-          window.location.replace('/');
-        }, 1000);
+
+        // Make request with credentials to ensure cookies are sent
+        fetch('/logout', {
+          method: 'GET',
+          headers: {
+            Accept: 'application/json',
+          },
+          credentials: 'same-origin', // Important for cookie operations
+        })
+          .then((response) => {
+            // Handle both JSON and non-JSON responses
+            const contentType = response.headers.get('content-type');
+            if (contentType && contentType.includes('application/json')) {
+              return response.json().then((data) => {
+                console.log('Logout successful:', data.message);
+                window.location.href = '/';
+              });
+            } else {
+              // Server sent a redirect, follow it
+              window.location.href = '/';
+            }
+          })
+          .catch((error) => {
+            console.error('Logout error:', error);
+            // Fallback redirect
+            window.location.href = '/';
+          });
+
+        return false;
       }
     </script>
   </body>
