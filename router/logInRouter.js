@@ -28,6 +28,6 @@ router.post(
 );
 
 // logout
-router.delete('/', logOut);
+router.get('/logout', decorateHtmlResponse(page_title), logOut);
 
 module.exports = router;

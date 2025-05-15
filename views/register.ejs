@@ -1,81 +1,85 @@
 <%- include('./partials/header.ejs'); %>
-    <div id="login-container">
-      <div id="left-column"></div>
-      <div id="branding">
-        <img src="./images/logo.png" />
-        <h1>Register - Chat Now</h1>
-      </div>
-      <div id="login-form">
-        <form method="post" enctype="multipart/form-data" id="register-form">
-          <input type="text" name="name" placeholder="Full Name" />
-          <p class="error name-error"></p>
+<div id="login-container">
+  <div id="left-column"></div>
+  <div id="branding">
+    <img src="./images/logo.png" />
+    <h1>Register - Chat Now</h1>
+  </div>
+  <div id="login-form">
+    <form method="post" enctype="multipart/form-data" id="register-form">
+      <input type="text" name="username" placeholder="Username" />
+      <p class="error name-error"></p>
 
-          <input type="email" name="email" placeholder="Email Address" />
-          <p class="error email-error"></p>
+      <input type="email" name="email" placeholder="Email Address" />
+      <p class="error email-error"></p>
 
-          <input type="text" name="mobile" placeholder="Mobile Number" />
-          <p class="error mobile-error"></p>
+      <input type="text" name="mobile" placeholder="Mobile Number" />
+      <p class="error mobile-error"></p>
 
-          <input type="password" name="password" placeholder="Password" />
-          <p class="error password-error"></p>
+      <select name="role">
+        <option value="user" selected>User</option>
+        <option value="admin">Admin</option>
+      </select>
+      <p class="error role-error"></p>
 
-          <input type="file" name="avatar" />
-          <p class="error avatar-error"></p>
+      <input type="password" name="password" placeholder="Password" />
+      <p class="error password-error"></p>
 
-          <p class="error common-error"></p>
+      <input type="file" name="avatar" />
+      <p class="error avatar-error"></p>
 
-          <input type="submit" value="Register" class="btn-primary" />
-        </form>
-        <div class="auth-links">
-          <p>Already have an account? <a href="/">Login here</a></p>
-        </div>
-      </div>
+      <p class="error common-error"></p>
+
+      <input type="submit" value="Register" class="btn-primary" />
+    </form>
+    <div class="auth-links">
+      <p>Already have an account? <a href="/">Login here</a></p>
     </div>
+  </div>
+</div>
 
+<script>
+  // Updated script with better error handling
+  document
+    .getElementById('register-form')
+    .addEventListener('submit', async (e) => {
+      e.preventDefault();
 
-    <script>
-      // Updated script with better error handling
-      document
-        .getElementById('register-form')
-        .addEventListener('submit', async (e) => {
-          e.preventDefault();
+      // Clear errors
+      document.querySelectorAll('.error').forEach((el) => {
+        el.textContent = '';
+        el.style.display = 'none';
+      });
 
-          // Clear errors
-          document.querySelectorAll('.error').forEach((el) => {
-            el.textContent = '';
-            el.style.display = 'none';
-          });
-
-          try {
-            const response = await fetch('/register', {
-              method: 'POST',
-              body: new FormData(e.target),
-            });
-
-            const result = await response.json();
-
-            if (!response.ok) {
-              // Handle validation errors
-              if (result.errors) {
-                Object.entries(result.errors).forEach(([field, error]) => {
-                  const errorEl = document.querySelector(`.${field}-error`);
-                  if (errorEl) {
-                    errorEl.textContent = error.msg;
-                    errorEl.style.display = 'block';
-                  }
-                });
-              }
-              return;
-            }
-
-            // Redirect on success
-            window.location.href = '/';
-          } catch (error) {
-            document.querySelector('.common-error').textContent =
-              'Registration failed. Please try again.';
-            document.querySelector('.common-error').style.display = 'block';
-          }
+      try {
+        const response = await fetch('/register', {
+          method: 'POST',
+          body: new FormData(e.target),
         });
-    </script>
-  </body>
-</html>
+
+        const result = await response.json();
+
+        if (!response.ok) {
+          // Handle validation errors
+          if (result.errors) {
+            Object.entries(result.errors).forEach(([field, error]) => {
+              const errorEl = document.querySelector(`.${field}-error`);
+              if (errorEl) {
+                errorEl.textContent = error.msg;
+                errorEl.style.display = 'block';
+              }
+            });
+          }
+          return;
+        }
+
+        // Redirect on success - redirect to inbox now that we're logged in after registration
+        window.location.href = '/inbox';
+      } catch (error) {
+        document.querySelector('.common-error').textContent =
+          'Registration failed. Please try again.';
+        document.querySelector('.common-error').style.display = 'block';
+      }
+    });
+</script>
+<!-- </body> </html> -->

@@ -9,7 +9,7 @@ const User = require('../../models/People');
 
 // add user
 const addUsersValidator = [
-  check('name')
+  check('username')
     .isLength({ min: 1 })
     .withMessage('Name is required')
     .isAlpha('en-US', { ignore: ' -' })
@@ -17,7 +17,7 @@ const addUsersValidator = [
     .trim(),
   check('email')
     .isEmail()
-    .withMessage('InvalidMail Address')
+    .withMessage('Invalid Mail Address')
     .trim()
     .custom(async (value) => {
       try {

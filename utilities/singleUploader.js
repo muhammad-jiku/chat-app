@@ -2,6 +2,7 @@
 const multer = require('multer');
 const path = require('path');
 const createError = require('http-errors');
+const fs = require('fs');
 
 function uploader(
   subfolder_path,
@@ -12,6 +13,12 @@ function uploader(
   // file upload folder
   const UPLOADS_FOLDER = `${__dirname}/../public/uploads/${subfolder_path}/`;
 
+  // Create directory if it doesn't exist
+  if (!fs.existsSync(UPLOADS_FOLDER)) {
+    fs.mkdirSync(UPLOADS_FOLDER, { recursive: true });
+    console.log(`Created directory: ${UPLOADS_FOLDER}`);
+  }
+
   // define storage
   const storage = multer.diskStorage({
     destination: (req, file, cb) => {
@@ -20,7 +27,11 @@ function uploader(
     filename: (req, file, cb) => {
       const fileExt = path.extname(file.originalname);
       const filename =
-        file.originalname.replace(fileExt, '').toLowerCase().split().join('-') +
+        file.originalname
+          .replace(fileExt, '')
+          .toLowerCase()
+          .split(' ')
+          .join('-') +
         '-' +
         Date.now();
 
@@ -29,7 +40,6 @@ function uploader(
   });
 
   // prepare the final multer upload object
-
   const upload = multer({
     storage: storage,
     limits: {

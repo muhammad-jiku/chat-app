@@ -7,6 +7,12 @@ function avatarUpload(req, res, next) {
     1000000,
     'Only .jpeg .jpg or .png file are allowed'
   );
+  console.log('avatarUpload middleware called on');
+  console.log('requested file', req.file);
+  console.log('requested files', req.files);
+  console.log('requested body', req.body);
+  console.log('uploaded files', upload);
+  console.log('avatarUpload middleware called off');
 
   // call the middleware function
   upload.any()(req, res, (err) => {

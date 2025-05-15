@@ -22,10 +22,10 @@
         <% if (loggedInUser && loggedInUser.avatar) { %>
         <img
           src="./uploads/avatars/<%= loggedInUser.avatar %>"
-          alt="<%= loggedInUser.name %>"
+          alt="<%= loggedInUser.username %>"
         />
         <% } else { %>
-        <img src="./images/nophoto.png" alt="<%= loggedInUser.name %>" />
+        <img src="./images/nophoto.png" alt="<%= loggedInUser.username %>" />
         <% } %>
         <a href="#" onclick="logout()">Logout</a>
       </div>

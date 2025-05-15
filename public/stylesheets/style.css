@@ -61,7 +61,8 @@ p.error {
 }
 
 /* input related styles */
-input {
+input,
+select {
   background: var(--tertiary);
   outline: none;
   padding: 15px;
@@ -576,7 +577,7 @@ input[type='submit']:active {
   max-width: 1000px;
   width: 100%;
   /* height: calc(100vh - 70px); */
-  height: calc(100vh);
+  min-height: 100vh;
   background: var(--primary);
   border-radius: 10px;
   grid-template-areas:
