@@ -5,16 +5,16 @@ function attachmentUpload(req, res, next) {
     'attachments',
     ['image/jpeg', 'image/jpg', 'image/png'],
     1000000,
-    2,
+    5, // Increased from 2 to 5 maximum files
     'Only .jpg, jpeg or .png format allowed!'
   );
 
   // call the middleware function
-  upload.any()(req, res, (err) => {
+  upload.array('attachment')(req, res, (err) => {
     if (err) {
       res.status(500).json({
         errors: {
-          avatar: {
+          attachment: {
             msg: err.message,
           },
         },

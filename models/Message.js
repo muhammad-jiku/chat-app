@@ -12,12 +12,12 @@ const messageSchema = mongoose.Schema(
     ],
     sender: {
       id: mongoose.Types.ObjectId,
-      name: String,
+      username: String,
       avatar: String,
     },
     receiver: {
       id: mongoose.Types.ObjectId,
-      name: String,
+      username: String,
       avatar: String,
     },
     date_time: {

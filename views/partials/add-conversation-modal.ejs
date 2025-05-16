@@ -8,7 +8,7 @@
       <form id="add-conversation-form">
         <input
           type="text"
-          placeholder="search user by name or email or mobile"
+          placeholder="search user by username or email or mobile"
           name="user"
           id="user"
           autocomplete="off"
@@ -21,35 +21,35 @@
   </div>
 </div>
 <script>
-  const modal = document.querySelector("#add-conversation-modal");
+  const modal = document.querySelector('#add-conversation-modal');
   // typing detector
   let typingTimer;
   const doneTypingInterval = 500;
-  const input = document.querySelector("input#user");
-  const conversation_list = document.querySelector("#conversation-list");
-  let users_placeholder = document.querySelector(".search_users");
+  const input = document.querySelector('input#user');
+  const conversation_list = document.querySelector('#conversation-list');
+  let users_placeholder = document.querySelector('.search_users');
 
   // conversation created failure toast
   const conversationFailureToast = Toastify({
-    text: "Error creating a conversation!",
+    text: 'Error creating a conversation!',
     duration: 1000,
   });
 
   function closeModal() {
-    modal.style.display = "none";
+    modal.style.display = 'none';
     // reset
-    users_placeholder.style.display = "none";
-    input.value = "";
+    users_placeholder.style.display = 'none';
+    input.value = '';
   }
   function openModal() {
-    modal.style.display = "block";
+    modal.style.display = 'block';
   }
 
   //on keyup, start the countdown
-  input.addEventListener("keyup", function () {
+  input.addEventListener('keyup', function () {
     clearTimeout(typingTimer);
     // reset
-    users_placeholder.style.display = "none";
+    users_placeholder.style.display = 'none';
 
     if (input.value) {
       typingTimer = setTimeout(searchUsers, doneTypingInterval); //user is "finished typing," send search request
@@ -57,19 +57,19 @@
   });
 
   //on keydown, clear the countdown
-  input.addEventListener("keydown", function () {
+  input.addEventListener('keydown', function () {
     clearTimeout(typingTimer);
   });
 
   // send request for search
   async function searchUsers() {
-    let response = await fetch("/inbox/search", {
-      method: "POST",
+    let response = await fetch('/inbox/search', {
+      method: 'POST',
       body: JSON.stringify({
         user: input.value,
       }),
       headers: {
-        "Content-type": "application/json; charset=UTF-8",
+        'Content-type': 'application/json; charset=UTF-8',
       },
     });
 
@@ -78,45 +78,45 @@
 
     // handle error and response
     if (result.errors) {
-      const errorplaceholder = document.querySelector("p.error");
+      const errorplaceholder = document.querySelector('p.error');
       errorplaceholder.textContent = result.errors.common.msg;
-      errorplaceholder.style.display = "block";
+      errorplaceholder.style.display = 'block';
     } else {
       if (result.length > 0) {
-        let generatedHtml = "<ul>";
+        let generatedHtml = '<ul>';
         result.forEach((user) => {
           const avatar = user.avatar
-            ? "./uploads/avatars/" + user.avatar
-            : "./images/nophoto.png";
+            ? './uploads/avatars/' + user.avatar
+            : './images/nophoto.png';
 
-          generatedHtml += `<li onclick="createConversation('${user._id}', '${user.name}', '${user.avatar}')">
+          generatedHtml += `<li onclick="createConversation('${user._id}', '${user.username}', '${user.avatar}')">
               <div class="user">
                 <div class="avatar">
                   <img src="${avatar}" />
                 </div>
-                <div class="username">${user.name}</div>
+                <div class="username">${user.username}</div>
               </div>
             </li>`;
         });
-        generatedHtml += "</ul>";
+        generatedHtml += '</ul>';
         users_placeholder.innerHTML = generatedHtml;
-        users_placeholder.style.display = "block";
+        users_placeholder.style.display = 'block';
       }
     }
   }
 
   // create Conversation
-  async function createConversation(participant_id, name, avatar) {
+  async function createConversation(participant_id, username, avatar) {
     try {
-      const response = await fetch("/inbox/conversation", {
-        method: "POST",
+      const response = await fetch('/inbox/conversation', {
+        method: 'POST',
         body: JSON.stringify({
-          participant: name,
+          participant: username,
           id: participant_id,
-          avatar: avatar != "undefined" ? avatar : null,
+          avatar: avatar != 'undefined' ? avatar : null,
         }),
         headers: {
-          "Content-type": "application/json; charset=UTF-8",
+          'Content-type': 'application/json; charset=UTF-8',
         },
       });
 
@@ -124,8 +124,8 @@
 
       if (!result.errors) {
         // reset
-        users_placeholder.style.display = "none";
-        input.value = name;
+        users_placeholder.style.display = 'none';
+        input.value = username;
         // reload the page after 1 second
         setTimeout(() => {
           location.reload();

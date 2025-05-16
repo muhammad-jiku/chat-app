@@ -124,6 +124,7 @@ input[type='submit']:active {
 }
 .modal {
   width: 450px;
+  height: 90vh;
   z-index: 99;
   left: 50%;
   top: 50%;
@@ -502,7 +503,7 @@ input[type='submit']:active {
   border-radius: 14px 14px 0 14px;
 }
 
-#chat-form {
+/* #chat-form {
   display: grid;
   grid: 51px / 32px 1fr;
   align-content: center;
@@ -514,8 +515,29 @@ input[type='submit']:active {
   padding-left: 10px;
   padding-right: 22px;
   visibility: hidden;
+} */
+/* ----- Updated chat-form styles ----- */
+/* These should replace the existing #chat-form in the original CSS */
+#chat-form {
+  display: flex;
+  flex-direction: column;
+  grid-area: chat-form;
+  border-radius: 0 0 10px 0;
+  border-top: 2px solid rgba(0, 0, 0, 0.25);
+  padding: 10px 15px;
+  visibility: hidden; /* Keep the visibility property from original CSS */
 }
 
+/* #chat-form input {
+  background: var(--primary);
+  outline: none;
+  padding: 15px;
+  border: 2px solid var(--dark);
+  color: rgba(255, 255, 255, 0.5);
+  border-radius: 6px;
+  font-size: 1.4rem;
+} */
+/* Updated chat-form input styles */
 #chat-form input {
   background: var(--primary);
   outline: none;
@@ -524,6 +546,7 @@ input[type='submit']:active {
   color: rgba(255, 255, 255, 0.5);
   border-radius: 6px;
   font-size: 1.4rem;
+  width: 100%; /* Ensure input takes full width */
 }
 
 #chat-form img {
@@ -817,4 +840,110 @@ input[type='submit']:active {
 .btn-primary:disabled {
   background: #bdc3c7;
   cursor: not-allowed;
+}
+
+/* Attachment preview section */
+.attachment-preview {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  padding: 10px;
+  min-height: 0;
+  max-height: 120px;
+  overflow-y: auto;
+  width: 100%;
+  background-color: rgba(31, 34, 46, 0.7);
+  border-radius: 6px 6px 0 0;
+  margin-bottom: 10px;
+}
+
+/* Hide attachment preview when empty */
+.attachment-preview:empty {
+  display: none;
+}
+
+/* Individual preview item */
+.preview-item {
+  position: relative;
+  width: 70px;
+  height: 70px;
+}
+
+/* Preview image */
+.preview-item img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 4px;
+  border: 1px solid var(--dark);
+}
+
+/* Remove button (x) */
+.remove-preview {
+  position: absolute;
+  top: -6px;
+  right: -6px;
+  width: 18px;
+  height: 18px;
+  background-color: var(--red);
+  color: var(--light);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: bold;
+  border: 1px solid var(--dark);
+  transition: transform 0.1s ease-in-out;
+}
+
+.remove-preview:hover {
+  transform: scale(1.1);
+}
+
+/* Form input container to better organize the chat form */
+.form-input-container {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  grid-gap: 10px;
+  width: 100%;
+}
+
+/* Attachment label styling */
+.attachment-label {
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+}
+
+.attachment-label img {
+  width: 22px;
+  height: 22px;
+  transition: transform 0.1s ease-in-out;
+}
+
+.attachment-label:hover img {
+  transform: scale(1.1);
+}
+
+/* Send button styling */
+#send-button {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  display: flex;
+  align-items: center;
+}
+
+#send-button img {
+  width: 28px;
+  height: 28px;
+  transition: transform 0.1s ease-in-out;
+}
+
+#send-button:hover img {
+  transform: scale(1.1);
 }

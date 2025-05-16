@@ -39,19 +39,26 @@ function uploader(
     limits: {
       fileSize: max_file_size,
     },
+    // fileFilter: (req, file, cb) => {
+    //   if (req.files.length > max_number_of_files) {
+    //     cb(
+    //       createError(
+    //         `Maximum ${max_number_of_files} files are allowed to upload!`
+    //       )
+    //     );
+    //   } else {
+    //     if (allowed_file_types.includes(file.mimetype)) {
+    //       cb(null, true);
+    //     } else {
+    //       cb(createError(error_msg));
+    //     }
+    //   }
+    // },
     fileFilter: (req, file, cb) => {
-      if (req.files.length > max_number_of_files) {
-        cb(
-          createError(
-            `Maximum ${max_number_of_files} files are allowed to upload!`
-          )
-        );
+      if (allowed_file_types.includes(file.mimetype)) {
+        cb(null, true);
       } else {
-        if (allowed_file_types.includes(file.mimetype)) {
-          cb(null, true);
-        } else {
-          cb(createError(error_msg));
-        }
+        cb(createError(error_msg));
       }
     },
   });

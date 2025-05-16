@@ -1,8 +1,7 @@
-// external imports
 const { check, validationResult } = require('express-validator');
 const createError = require('http-errors');
 const path = require('path');
-const { unlink } = require('fs');
+const fs = require('fs');
 
 // internal imports
 const User = require('../../models/People');
@@ -11,10 +10,20 @@ const User = require('../../models/People');
 const addUsersValidator = [
   check('username')
     .isLength({ min: 1 })
-    .withMessage('Name is required')
+    .withMessage('Username is required')
     .isAlpha('en-US', { ignore: ' -' })
-    .withMessage('Name must not contain anything other than Alphabet')
-    .trim(),
+    .withMessage('Username must not contain anything other than Alphabet')
+    .trim()
+    .custom(async (value) => {
+      try {
+        const user = await User.findOne({ username: value });
+        if (user) {
+          throw createError('This username already exists!');
+        }
+      } catch (err) {
+        throw createError(err.message);
+      }
+    }),
   check('email')
     .isEmail()
     .withMessage('Invalid Mail Address')
@@ -53,29 +62,34 @@ const addUsersValidator = [
 
 const addUsersValidationHandler = function (req, res, next) {
   const errors = validationResult(req);
-  // const mappedErrors = errors.mapped();
-  // if (Object.keys(mappedErrors).length > 0) {
-  //   res.status(400).json({
-  //     errors: mappedErrors,
-  //   });
-  // }
   const mappedErrors = errors.mapped();
+  console.log('errors', errors);
+  console.log('mapped errors', mappedErrors);
+
   if (Object.keys(mappedErrors).length === 0) {
     next();
   } else {
-    // remove uploaded files
-    if (req.files.length > 0) {
+    // Remove uploaded files if validation fails
+    if (req.files && req.files.length > 0) {
       const { filename } = req.files[0];
-      unlink(
-        path.join(__dirname, `/../public/uploads/avatars/${filename}`),
-        (err) => {
-          if (err) console.log(err);
-        }
+      const filePath = path.join(
+        __dirname,
+        '../../public/uploads/avatars/',
+        filename
       );
+
+      // Use fs.unlink instead of requiring just the unlink method
+      fs.unlink(filePath, (err) => {
+        if (err) {
+          console.error('Error deleting file:', err);
+        } else {
+          console.log(`Successfully deleted ${filePath}`);
+        }
+      });
     }
 
-    // response the errors
-    res.status(500).json({
+    // Send validation errors back to client
+    res.status(400).json({
       errors: mappedErrors,
     });
   }

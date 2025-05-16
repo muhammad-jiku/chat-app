@@ -39,6 +39,7 @@ async function addUsers(req, res, next) {
   // save user or send errors
   try {
     const result = await newUser.save();
+    console.log('user result', result);
     res.status(200).json({
       message: 'User was added successfully!',
     });

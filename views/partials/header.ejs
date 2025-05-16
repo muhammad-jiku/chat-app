@@ -17,7 +17,9 @@
     <div class="menu">
       <% if (loggedInUser && loggedInUser.username) { %>
       <div class="menu-item"><a href="/inbox">Inbox</a></div>
+      <% if (loggedInUser && loggedInUser.role === 'admin') { %>
       <div class="menu-item"><a href="/users">Users</a></div>
+      <% } %>
       <div class="menu-item">
         <% if (loggedInUser && loggedInUser.avatar) { %>
         <img

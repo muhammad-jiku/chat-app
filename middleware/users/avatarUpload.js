@@ -5,28 +5,39 @@ function avatarUpload(req, res, next) {
     'avatars',
     ['image/jpeg', 'image/jpg', 'image/png'],
     1000000,
-    'Only .jpeg .jpg or .png file are allowed'
+    'Only .jpeg .jpg or .png files are allowed'
   );
-  console.log('avatarUpload middleware called on');
-  console.log('requested file', req.file);
-  console.log('requested files', req.files);
-  console.log('requested body', req.body);
-  console.log('uploaded files', upload);
-  console.log('avatarUpload middleware called off');
 
-  // call the middleware function
-  upload.any()(req, res, (err) => {
+  // Call upload.array to handle the avatar field
+  // This ensures req.files will contain the uploaded files
+  upload.array('avatar', 1)(req, res, (err) => {
     if (err) {
-      res.status(500).json({
+      console.error('File upload error:', err);
+
+      // Handle different types of errors
+      if (err.code === 'LIMIT_FILE_SIZE') {
+        return res.status(400).json({
+          errors: {
+            avatar: {
+              msg: 'File size too large. Maximum 1MB allowed.',
+            },
+          },
+        });
+      }
+
+      return res.status(400).json({
         errors: {
           avatar: {
-            msg: err.message,
+            msg: err.message || 'Error uploading file',
           },
         },
       });
-    } else {
-      next();
     }
+
+    // For debugging - log file information
+    console.log('Uploaded files:', req.files);
+
+    next();
   });
 }
 

@@ -10,8 +10,15 @@ function uploader(
   max_file_size,
   error_msg
 ) {
-  // file upload folder
-  const UPLOADS_FOLDER = `${__dirname}/../public/uploads/${subfolder_path}/`;
+  // Use path.join with absolute path to project root
+  // to ensure consistent path resolution across the application
+  const PROJECT_ROOT = path.join(__dirname, '..');
+  const UPLOADS_FOLDER = path.join(
+    PROJECT_ROOT,
+    'public',
+    'uploads',
+    subfolder_path
+  );
 
   // Create directory if it doesn't exist
   if (!fs.existsSync(UPLOADS_FOLDER)) {

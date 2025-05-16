@@ -5,21 +5,21 @@
   </div>
   <div id="conversation-list">
     <% data.forEach(function(conversation) { %>
-    <!-- conversation creator is same to logged in user, so we need to show participant name and avatar -->
+    <!-- conversation creator is same to logged in user, so we need to show participant username and avatar -->
     <% if(conversation.creator.id == loggedInUser.userid) { %>
     <div
       class="conversation"
-      onclick="getMessages('<%= conversation._id %>', '<%= conversation.participant.name %>')"
+      onclick="getMessages('<%= conversation._id %>', '<%= conversation.participant.username %>')"
     >
       <% if (conversation.participant.avatar) { %>
       <img
         src="./uploads/avatars/<%= conversation.participant.avatar %>"
-        alt="<%= conversation.participant.name %>"
+        alt="<%= conversation.participant.username %>"
       />
       <% } else { %>
       <img src="./images/nophoto.png" />
       <% } %>
-      <div class="title-text"><%= conversation.participant.name %></div>
+      <div class="title-text"><%= conversation.participant.username %></div>
       <div class="conversation-date">
         <%= moment(conversation.last_updated).fromNow() %>
       </div>
@@ -27,17 +27,17 @@
     <% } else { %>
     <div
       class="conversation"
-      onclick="getMessages('<%= conversation._id %>', '<%= conversation.creator.name %>')"
+      onclick="getMessages('<%= conversation._id %>', '<%= conversation.creator.username %>')"
     >
       <% if (conversation.creator.avatar) { %>
       <img
         src="./uploads/avatars/<%= conversation.creator.avatar %>"
-        alt="<%= conversation.creator.name %>"
+        alt="<%= conversation.creator.username %>"
       />
       <% } else { %>
       <img src="./images/nophoto.png" />
       <% } %>
-      <div class="title-text"><%= conversation.creator.name %></div>
+      <div class="title-text"><%= conversation.creator.username %></div>
       <div class="conversation-date">
         <%= moment(conversation.last_updated).fromNow() %>
       </div>
@@ -65,23 +65,55 @@
   </div>
 
   <!-- send message form -->
+  <!-- <form id="chat-form" method="post" enctype="multipart/form-data">
+    <div id="attachment-preview" class="attachment-preview"></div>
+    <div class="form-input-container">
+      <label for="attachment" class="attachment-label">
+        <img src="./images/attachment.png" alt="Add Attachment" />
+      </label>
+      <input
+        type="file"
+        multiple
+        name="attachment"
+        class="hide"
+        id="attachment"
+        accept="image/jpeg,image/jpg,image/png"
+      />
+      <input
+        type="text"
+        name="message"
+        placeholder="Type a message"
+        autocomplete="off"
+      />
+      <button type="submit" id="send-button">
+        <img src="./images/send.png" alt="Send" />
+      </button>
+    </div>
+  </form> -->
   <form id="chat-form" method="post" enctype="multipart/form-data">
-    <label for="attachment"
-      ><img src="./images/attachment.png" alt="Add Attachment"
-    /></label>
-    <input
-      type="file"
-      multiple
-      name="attachment"
-      class="hide"
-      id="attachment"
-    />
-    <input
-      type="text"
-      name="message"
-      placeholder="Type a message"
-      autocomplete="off"
-    />
+    <div id="attachment-preview" class="attachment-preview"></div>
+    <div class="form-input-container">
+      <label for="attachment" class="attachment-label">
+        <img src="./images/attachment.png" alt="Add Attachment" />
+      </label>
+      <input
+        type="file"
+        multiple
+        name="attachment"
+        class="hide"
+        id="attachment"
+        accept="image/jpeg,image/jpg,image/png"
+      />
+      <input
+        type="text"
+        name="message"
+        placeholder="Type a message"
+        autocomplete="off"
+      />
+      <button type="submit" id="send-button">
+        <img src="./images/send.png" alt="Send" />
+      </button>
+    </div>
   </form>
 </div>
 <%- include('./partials/add-conversation-modal.ejs'); %>
@@ -93,6 +125,163 @@
   crossorigin="anonymous"
   referrerpolicy="no-referrer"
 ></script>
+
+<!-- Add this JavaScript to handle image preview -->
+<!-- <script>
+  // Image preview functionality
+  const attachmentInput = document.getElementById('attachment');
+  const previewContainer = document.getElementById('attachment-preview');
+  let selectedFiles = [];
+
+  attachmentInput.addEventListener('change', function () {
+    previewContainer.innerHTML = ''; // Clear existing previews
+
+    if (this.files.length > 0) {
+      selectedFiles = Array.from(this.files);
+
+      selectedFiles.forEach((file, index) => {
+        if (!file.type.match('image.*')) {
+          return; // Skip non-image files
+        }
+
+        const reader = new FileReader();
+
+        reader.onload = function (e) {
+          const previewItem = document.createElement('div');
+          previewItem.className = 'preview-item';
+
+          const img = document.createElement('img');
+          img.src = e.target.result;
+
+          const removeButton = document.createElement('div');
+          removeButton.className = 'remove-preview';
+          removeButton.innerHTML = '×';
+          removeButton.onclick = function () {
+            removeFile(index);
+          };
+
+          previewItem.appendChild(img);
+          previewItem.appendChild(removeButton);
+          previewContainer.appendChild(previewItem);
+        };
+
+        reader.readAsDataURL(file);
+      });
+    }
+  });
+
+  function removeFile(index) {
+    selectedFiles.splice(index, 1);
+
+    // Create a new DataTransfer object
+    const dataTransfer = new DataTransfer();
+
+    // Add the remaining files to the DataTransfer object
+    selectedFiles.forEach((file) => {
+      dataTransfer.items.add(file);
+    });
+
+    // Set the input's files to the new file list
+    attachmentInput.files = dataTransfer.files;
+
+    // Update preview
+    attachmentInput.dispatchEvent(new Event('change'));
+  }
+</script> -->
+<script>
+  // Enhanced attachment preview functionality
+  document.addEventListener('DOMContentLoaded', function () {
+    const attachmentInput = document.getElementById('attachment');
+    const previewContainer = document.getElementById('attachment-preview');
+    const chatForm = document.getElementById('chat-form');
+    let selectedFiles = [];
+
+    // Function to update the input files list
+    function updateInputFiles() {
+      const dataTransfer = new DataTransfer();
+
+      // Add the remaining files to the DataTransfer object
+      selectedFiles.forEach((file) => {
+        dataTransfer.items.add(file);
+      });
+
+      // Set the input's files to the new file list
+      attachmentInput.files = dataTransfer.files;
+    }
+
+    // Function to create preview for a single file
+    function createPreview(file, index) {
+      if (!file.type.match('image.*')) {
+        return; // Skip non-image files
+      }
+
+      const reader = new FileReader();
+
+      reader.onload = function (e) {
+        const previewItem = document.createElement('div');
+        previewItem.className = 'preview-item';
+
+        const img = document.createElement('img');
+        img.src = e.target.result;
+        img.alt = 'Attachment preview';
+
+        const removeButton = document.createElement('div');
+        removeButton.className = 'remove-preview';
+        removeButton.innerHTML = '×';
+        removeButton.dataset.index = index;
+        removeButton.addEventListener('click', function () {
+          removeFile(parseInt(this.dataset.index));
+        });
+
+        previewItem.appendChild(img);
+        previewItem.appendChild(removeButton);
+        previewContainer.appendChild(previewItem);
+      };
+
+      reader.readAsDataURL(file);
+    }
+
+    // Function to remove a file from the selection
+    function removeFile(index) {
+      selectedFiles.splice(index, 1);
+      updateInputFiles();
+      renderPreviews();
+    }
+
+    // Function to render all previews
+    function renderPreviews() {
+      previewContainer.innerHTML = ''; // Clear existing previews
+
+      if (selectedFiles.length > 0) {
+        selectedFiles.forEach((file, index) => {
+          createPreview(file, index);
+        });
+      }
+    }
+
+    // Listen for file selection changes
+    attachmentInput.addEventListener('change', function () {
+      if (this.files.length > 0) {
+        // Add new files to our array
+        Array.from(this.files).forEach((file) => {
+          if (file.type.match('image.*')) {
+            selectedFiles.push(file);
+          }
+        });
+
+        renderPreviews();
+      }
+    });
+
+    // Reset attachment previews when form is submitted
+    chatForm.addEventListener('submit', function () {
+      setTimeout(() => {
+        selectedFiles = [];
+        previewContainer.innerHTML = '';
+      }, 100);
+    });
+  });
+</script>
 
 <script>
   const form = document.querySelector('#chat-form');
@@ -117,8 +306,8 @@
           : 'other-message';
 
       const senderAvatar = data.message.sender.avatar
-        ? `<img src="./uploads/avatars/${data.message.sender.avatar}" alt="${data.message.sender.name}" />`
-        : `<img src="./images/nophoto.png" alt="${data.message.sender.name}" />`;
+        ? `<img src="./uploads/avatars/${data.message.sender.avatar}" alt="${data.message.sender.username}" />`
+        : `<img src="./images/nophoto.png" alt="${data.message.sender.username}" />`;
 
       // message attachments
       let attachments = '<div class="attachments">';
@@ -194,7 +383,7 @@
             const showAvatar =
               message.sender.id === loggedinUserId
                 ? ''
-                : `<img src="${senderAvatar}" alt="${message.sender.name}" />`;
+                : `<img src="${senderAvatar}" alt="${message.sender.username}" />`;
 
             // message attachments
             let attachments = '<div class="attachments">';
@@ -243,7 +432,7 @@
     // prepare the form data
     const formData = new FormData(form);
     formData.append('receiverId', participant.id);
-    formData.append('receiverName', participant.name);
+    formData.append('receiverName', participant.username);
     formData.append('avatar', participant.avatar || '');
     formData.append('conversationId', current_conversation_id);
 
@@ -263,5 +452,6 @@
     }
   };
 </script>
+
 <!-- </body>
 </html> -->
