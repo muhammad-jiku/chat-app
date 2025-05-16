@@ -451,7 +451,8 @@ input[type='submit']:active {
 }
 
 .message-content img {
-  width: 32px;
+  height: 48px;
+  width: auto;
 }
 
 .you-message {
@@ -503,41 +504,17 @@ input[type='submit']:active {
   border-radius: 14px 14px 0 14px;
 }
 
-/* #chat-form {
-  display: grid;
-  grid: 51px / 32px 1fr;
-  align-content: center;
-  align-items: center;
-  grid-gap: 15px;
-  grid-area: chat-form;
-  border-radius: 0 0 10px 0;
-  border-top: 2px solid rgba(0, 0, 0, 0.25);
-  padding-left: 10px;
-  padding-right: 22px;
-  visibility: hidden;
-} */
-/* ----- Updated chat-form styles ----- */
-/* These should replace the existing #chat-form in the original CSS */
+/* chat-form related styles */
 #chat-form {
   display: flex;
-  flex-direction: column;
   grid-area: chat-form;
   border-radius: 0 0 10px 0;
   border-top: 2px solid rgba(0, 0, 0, 0.25);
   padding: 10px 15px;
   visibility: hidden; /* Keep the visibility property from original CSS */
+  position: relative; /* For absolute positioning of the preview */
 }
 
-/* #chat-form input {
-  background: var(--primary);
-  outline: none;
-  padding: 15px;
-  border: 2px solid var(--dark);
-  color: rgba(255, 255, 255, 0.5);
-  border-radius: 6px;
-  font-size: 1.4rem;
-} */
-/* Updated chat-form input styles */
 #chat-form input {
   background: var(--primary);
   outline: none;
@@ -563,7 +540,6 @@ input[type='submit']:active {
 }
 
 /* inbox related responsive styles */
-
 @media only screen and (max-width: 1000px) {
   #chat-container {
     width: auto;
@@ -844,17 +820,18 @@ input[type='submit']:active {
 
 /* Attachment preview section */
 .attachment-preview {
+  position: absolute;
+  bottom: 100%; /* Position it right above the chat form */
+  left: 0;
+  right: 0;
   display: flex;
   flex-wrap: wrap;
   gap: 8px;
   padding: 10px;
-  min-height: 0;
   max-height: 120px;
   overflow-y: auto;
-  width: 100%;
   background-color: rgba(31, 34, 46, 0.7);
   border-radius: 6px 6px 0 0;
-  margin-bottom: 10px;
 }
 
 /* Hide attachment preview when empty */

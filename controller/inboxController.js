@@ -141,6 +141,82 @@ async function getMessages(req, res, next) {
 }
 
 // send new message
+// async function sendMessage(req, res, next) {
+//   console.log('req.body message', req.body);
+//   console.log('req.files message', req.files);
+
+//   // Check if there's a message or files to send
+//   if (req.body.message || (req.files && req.files.length > 0)) {
+//     try {
+//       // save message text/attachment in database
+//       let attachments = null;
+
+//       if (req.files && req.files.length > 0) {
+//         attachments = [];
+
+//         req.files.forEach((file) => {
+//           attachments.push(file.filename);
+//         });
+//       }
+//       console.log('attachments', attachments);
+
+//       const newMessage = new Message({
+//         text: req.body.message,
+//         attachment: attachments,
+//         sender: {
+//           id: req.user.userid,
+//           username: req.user.username,
+//           avatar: req.user.avatar || null,
+//         },
+//         receiver: {
+//           id: req.body.receiverId,
+//           username: req.body.receiverName,
+//           avatar: req.body.avatar || null,
+//         },
+//         conversation_id: req.body.conversationId,
+//       });
+//       console.log('new message', newMessage);
+
+//       const result = await newMessage.save();
+//       console.log('message result', result);
+
+//       // emit socket event
+//       global.io.emit('new_message', {
+//         message: {
+//           conversation_id: req.body.conversationId,
+//           sender: {
+//             id: req.user.userid,
+//             username: req.user.username,
+//             avatar: req.user.avatar || null,
+//           },
+//           message: req.body.message,
+//           attachment: attachments,
+//           date_time: result.date_time,
+//         },
+//       });
+
+//       res.status(200).json({
+//         message: 'Successful!',
+//         data: result,
+//       });
+//     } catch (err) {
+//       console.log('message error', err);
+//       res.status(500).json({
+//         errors: {
+//           common: {
+//             msg: err.message,
+//           },
+//         },
+//       });
+//     }
+//   } else {
+//     res.status(500).json({
+//       errors: {
+//         common: 'message text or attachment is required!',
+//       },
+//     });
+//   }
+// }
 async function sendMessage(req, res, next) {
   console.log('req.body message', req.body);
   console.log('req.files message', req.files);
@@ -157,11 +233,11 @@ async function sendMessage(req, res, next) {
         req.files.forEach((file) => {
           attachments.push(file.filename);
         });
+        console.log('Processed attachments:', attachments);
       }
-      console.log('attachments', attachments);
 
       const newMessage = new Message({
-        text: req.body.message,
+        text: req.body.message || '', // Use empty string if no message text
         attachment: attachments,
         sender: {
           id: req.user.userid,
@@ -175,10 +251,10 @@ async function sendMessage(req, res, next) {
         },
         conversation_id: req.body.conversationId,
       });
-      console.log('new message', newMessage);
+      console.log('new message object:', newMessage);
 
       const result = await newMessage.save();
-      console.log('message result', result);
+      console.log('message saved result:', result);
 
       // emit socket event
       global.io.emit('new_message', {
@@ -189,7 +265,7 @@ async function sendMessage(req, res, next) {
             username: req.user.username,
             avatar: req.user.avatar || null,
           },
-          message: req.body.message,
+          message: req.body.message || '',
           attachment: attachments,
           date_time: result.date_time,
         },

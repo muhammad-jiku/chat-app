@@ -65,31 +65,6 @@
   </div>
 
   <!-- send message form -->
-  <!-- <form id="chat-form" method="post" enctype="multipart/form-data">
-    <div id="attachment-preview" class="attachment-preview"></div>
-    <div class="form-input-container">
-      <label for="attachment" class="attachment-label">
-        <img src="./images/attachment.png" alt="Add Attachment" />
-      </label>
-      <input
-        type="file"
-        multiple
-        name="attachment"
-        class="hide"
-        id="attachment"
-        accept="image/jpeg,image/jpg,image/png"
-      />
-      <input
-        type="text"
-        name="message"
-        placeholder="Type a message"
-        autocomplete="off"
-      />
-      <button type="submit" id="send-button">
-        <img src="./images/send.png" alt="Send" />
-      </button>
-    </div>
-  </form> -->
   <form id="chat-form" method="post" enctype="multipart/form-data">
     <div id="attachment-preview" class="attachment-preview"></div>
     <div class="form-input-container">
@@ -127,73 +102,81 @@
 ></script>
 
 <!-- Add this JavaScript to handle image preview -->
-<!-- <script>
-  // Image preview functionality
-  const attachmentInput = document.getElementById('attachment');
-  const previewContainer = document.getElementById('attachment-preview');
-  let selectedFiles = [];
+<script>
+  // Replace the entire attachment handling script with this improved version:
+  document.addEventListener('DOMContentLoaded', function () {
+    const attachmentInput = document.getElementById('attachment');
+    const previewContainer = document.getElementById('attachment-preview');
+    const chatForm = document.getElementById('chat-form');
+    const chatMessageList = document.getElementById('chat-message-list');
 
-  attachmentInput.addEventListener('change', function () {
-    previewContainer.innerHTML = ''; // Clear existing previews
+    // Listen for file selection changes
+    attachmentInput.addEventListener('change', function () {
+      if (this.files.length > 0) {
+        previewContainer.innerHTML = ''; // Clear existing previews
+        previewContainer.style.display = 'flex';
 
-    if (this.files.length > 0) {
-      selectedFiles = Array.from(this.files);
+        // Create previews for each file
+        Array.from(this.files).forEach((file) => {
+          if (file.type.match('image.*')) {
+            const reader = new FileReader();
 
-      selectedFiles.forEach((file, index) => {
-        if (!file.type.match('image.*')) {
-          return; // Skip non-image files
-        }
+            reader.onload = function (e) {
+              const previewItem = document.createElement('div');
+              previewItem.className = 'preview-item';
 
-        const reader = new FileReader();
+              const img = document.createElement('img');
+              img.src = e.target.result;
+              img.alt = 'Attachment preview';
 
-        reader.onload = function (e) {
-          const previewItem = document.createElement('div');
-          previewItem.className = 'preview-item';
+              const removeButton = document.createElement('div');
+              removeButton.className = 'remove-preview';
+              removeButton.innerHTML = '×';
+              removeButton.onclick = function () {
+                previewContainer.removeChild(previewItem);
 
-          const img = document.createElement('img');
-          img.src = e.target.result;
+                // If no previews left, hide the container
+                if (previewContainer.children.length === 0) {
+                  previewContainer.style.display = 'none';
+                  chatMessageList.style.paddingBottom = '0';
+                }
+              };
 
-          const removeButton = document.createElement('div');
-          removeButton.className = 'remove-preview';
-          removeButton.innerHTML = '×';
-          removeButton.onclick = function () {
-            removeFile(index);
-          };
+              previewItem.appendChild(img);
+              previewItem.appendChild(removeButton);
+              previewContainer.appendChild(previewItem);
+            };
 
-          previewItem.appendChild(img);
-          previewItem.appendChild(removeButton);
-          previewContainer.appendChild(previewItem);
-        };
+            reader.readAsDataURL(file);
+          }
+        });
 
-        reader.readAsDataURL(file);
-      });
-    }
-  });
-
-  function removeFile(index) {
-    selectedFiles.splice(index, 1);
-
-    // Create a new DataTransfer object
-    const dataTransfer = new DataTransfer();
-
-    // Add the remaining files to the DataTransfer object
-    selectedFiles.forEach((file) => {
-      dataTransfer.items.add(file);
+        // Adjust chat message list padding
+        chatMessageList.style.paddingBottom = '120px';
+      }
     });
 
-    // Set the input's files to the new file list
-    attachmentInput.files = dataTransfer.files;
+    // Reset attachment previews when form is submitted
+    chatForm.addEventListener('submit', function () {
+      setTimeout(() => {
+        previewContainer.innerHTML = '';
+        previewContainer.style.display = 'none';
+        chatMessageList.style.paddingBottom = '0';
+      }, 100);
+    });
 
-    // Update preview
-    attachmentInput.dispatchEvent(new Event('change'));
-  }
-</script> -->
-<script>
+    // Initialize to hide the preview container
+    previewContainer.style.display = 'none';
+  });
+</script>
+
+<!-- <script>
   // Enhanced attachment preview functionality
   document.addEventListener('DOMContentLoaded', function () {
     const attachmentInput = document.getElementById('attachment');
     const previewContainer = document.getElementById('attachment-preview');
     const chatForm = document.getElementById('chat-form');
+    const chatMessageList = document.getElementById('chat-message-list');
     let selectedFiles = [];
 
     // Function to update the input files list
@@ -253,9 +236,22 @@
       previewContainer.innerHTML = ''; // Clear existing previews
 
       if (selectedFiles.length > 0) {
+        // Show the preview container when files are selected
+        previewContainer.style.display = 'flex';
+
         selectedFiles.forEach((file, index) => {
           createPreview(file, index);
         });
+
+        // Adjust the chat message list to account for the preview
+        // This gives a visual cue that the preview is taking space
+        chatMessageList.style.paddingBottom = '120px';
+      } else {
+        // Hide the preview container when no files are selected
+        previewContainer.style.display = 'none';
+
+        // Reset the chat message list padding
+        chatMessageList.style.paddingBottom = '0';
       }
     }
 
@@ -277,11 +273,14 @@
     chatForm.addEventListener('submit', function () {
       setTimeout(() => {
         selectedFiles = [];
-        previewContainer.innerHTML = '';
+        renderPreviews(); // This will hide the preview and reset padding
       }, 100);
     });
+
+    // Initialize to hide the preview container
+    previewContainer.style.display = 'none';
   });
-</script>
+</script> -->
 
 <script>
   const form = document.querySelector('#chat-form');
@@ -421,6 +420,7 @@
   }
 
   // message sending
+  // message sending
   form.onsubmit = async function (event) {
     event.preventDefault();
 
@@ -429,12 +429,24 @@
       duration: 1000,
     });
 
-    // prepare the form data
+    // Create form data and explicitly add the file input's files
     const formData = new FormData(form);
+
+    // Double-check that files are added to the FormData
+    const attachmentFiles = document.getElementById('attachment').files;
+    // Clear any existing attachments from the FormData and re-add them
+    formData.delete('attachment');
+    for (let i = 0; i < attachmentFiles.length; i++) {
+      formData.append('attachment', attachmentFiles[i]);
+    }
+
     formData.append('receiverId', participant.id);
     formData.append('receiverName', participant.username);
     formData.append('avatar', participant.avatar || '');
     formData.append('conversationId', current_conversation_id);
+
+    // Debug: Log the FormData contents to ensure files are included
+    console.log('Files being sent:', attachmentFiles.length);
 
     // send the request to server
     let response = await fetch('/inbox/message', {
@@ -448,10 +460,8 @@
     if (!result.errors) {
       form.reset(); // reset the form
     } else {
+      console.error('Message sending error:', result.errors);
       sendMessageFailureToast.showToast();
     }
   };
 </script>
-
-<!-- </body>
-</html> -->
