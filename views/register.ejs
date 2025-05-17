@@ -1,4 +1,5 @@
 <%- include('./partials/header.ejs'); %>
+
 <div id="login-container">
   <div id="left-column"></div>
   <div id="branding">
@@ -62,7 +63,6 @@
         if (!response.ok) {
           // Handle validation errors
           if (result.errors) {
-            console.log('result errors', result.errors);
             Object.entries(result.errors).forEach(([field, error]) => {
               const errorEl = document.querySelector(`.${field}-error`);
               if (errorEl) {
@@ -83,4 +83,3 @@
       }
     });
 </script>
-<!-- </body> </html> -->

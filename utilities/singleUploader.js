@@ -1,7 +1,8 @@
 // external imports
 const multer = require('multer');
-const path = require('path');
 const createError = require('http-errors');
+// internal imports
+const path = require('path');
 const fs = require('fs');
 
 function uploader(
@@ -23,7 +24,7 @@ function uploader(
   // Create directory if it doesn't exist
   if (!fs.existsSync(UPLOADS_FOLDER)) {
     fs.mkdirSync(UPLOADS_FOLDER, { recursive: true });
-    console.log(`Created directory: ${UPLOADS_FOLDER}`);
+    // console.log(`Created directory: ${UPLOADS_FOLDER}`); // debugging log
   }
 
   // define storage

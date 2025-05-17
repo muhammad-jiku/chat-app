@@ -1,3 +1,4 @@
+// internal import
 const uploader = require('../../utilities/singleUploader');
 
 function avatarUpload(req, res, next) {
@@ -12,7 +13,7 @@ function avatarUpload(req, res, next) {
   // This ensures req.files will contain the uploaded files
   upload.array('avatar', 1)(req, res, (err) => {
     if (err) {
-      console.error('File upload error:', err);
+      console.error('File upload error:', err); // debugging log
 
       // Handle different types of errors
       if (err.code === 'LIMIT_FILE_SIZE') {
@@ -35,7 +36,7 @@ function avatarUpload(req, res, next) {
     }
 
     // For debugging - log file information
-    console.log('Uploaded files:', req.files);
+    console.log('Uploaded files:', req.files); // debugging log
 
     next();
   });

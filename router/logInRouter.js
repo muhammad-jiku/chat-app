@@ -1,7 +1,6 @@
 // external import
 const express = require('express');
-
-// internal import
+// internal imports
 const { getLogIn, logIn, logOut } = require('../controller/logInController');
 const { redirectLoggedIn } = require('../middleware/common/checkLogIn');
 const decorateHtmlResponse = require('../middleware/common/decorateHtmlResponse');
@@ -10,6 +9,7 @@ const {
   doLoginValidationHandler,
 } = require('../middleware/login/logInValidator');
 
+// router initialization
 const router = express.Router();
 
 // set page_title

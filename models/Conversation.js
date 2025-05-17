@@ -1,3 +1,4 @@
+// external import
 const mongoose = require('mongoose');
 
 const conversationSchema = mongoose.Schema(

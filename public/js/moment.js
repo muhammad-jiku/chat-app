@@ -283,7 +283,7 @@
       typeof console !== 'undefined' &&
       console.warn
     ) {
-      console.warn('Deprecation warning: ' + msg);
+      console.warn('Deprecation warning: ' + msg); // debugging log
     }
   }
 
@@ -2105,7 +2105,7 @@
           //warn user if arguments are passed but the locale could not be set
           console.warn(
             'Locale ' + key + ' not found. Did you forget to load it?'
-          );
+          ); // debugging log
         }
       }
     }

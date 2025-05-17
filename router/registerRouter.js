@@ -1,6 +1,6 @@
+// external import
 const express = require('express');
-
-const router = express.Router();
+// internal imports
 const {
   getRegister,
   registerUser,
@@ -11,6 +11,9 @@ const {
   addUsersValidator,
   addUsersValidationHandler,
 } = require('../middleware/users/usersValidator');
+
+// router initialization
+const router = express.Router();
 
 // GET register page
 router.get('/', decorateHtmlResponse('Register'), getRegister);

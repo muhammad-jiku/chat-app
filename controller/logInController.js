@@ -1,8 +1,7 @@
-//external import
+//external imports
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const createError = require('http-errors');
-
 // internal import
 const User = require('../models/People');
 
@@ -14,7 +13,6 @@ function getLogIn(req, res, next) {
 // do login
 async function logIn(req, res, next) {
   try {
-    console.log('logIn body', req.body);
     // find user with this email/username
     const user = await User.findOne({
       $or: [
@@ -23,14 +21,12 @@ async function logIn(req, res, next) {
         { mobile: req.body.username },
       ],
     });
-    console.log('user', user);
 
     if (user && user._id) {
       const isValidPassword = await bcrypt.compare(
         req.body.password,
         user.password
       );
-      console.log('isValidPassword', isValidPassword);
 
       if (isValidPassword) {
         // prepare the user object to generate token
@@ -46,7 +42,6 @@ async function logIn(req, res, next) {
         const token = jwt.sign(userObject, process.env.JWT_SECRET, {
           expiresIn: process.env.JWT_EXPIRY,
         });
-        console.log('token', token);
 
         // set cookie
         res.cookie(process.env.COOKIE_NAME, token, {
@@ -57,7 +52,6 @@ async function logIn(req, res, next) {
 
         // set logged in user local identifier
         res.locals.loggedInUser = userObject;
-        console.log('res.locals.loggedInUser', res.locals.loggedInUser);
 
         res.redirect('inbox');
       } else {
@@ -89,8 +83,6 @@ function logOut(req, res) {
     path: '/',
     sameSite: 'strict', // Helps with cookie security
   });
-
-  console.log('Clearing cookie:', process.env.COOKIE_NAME);
 
   // Check if it's an AJAX request
   if (

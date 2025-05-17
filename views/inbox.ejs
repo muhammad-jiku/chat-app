@@ -1,4 +1,5 @@
 <%- include('./partials/header.ejs'); %>
+
 <div id="chat-container">
   <div id="search-container">
     <input type="text" placeholder="Search" />
@@ -103,7 +104,7 @@
 
 <!-- Add this JavaScript to handle image preview -->
 <script>
-  // Replace the entire attachment handling script with this improved version:
+  // This is the single, consolidated attachment handling script
   document.addEventListener('DOMContentLoaded', function () {
     const attachmentInput = document.getElementById('attachment');
     const previewContainer = document.getElementById('attachment-preview');
@@ -170,119 +171,8 @@
   });
 </script>
 
-<!-- <script>
-  // Enhanced attachment preview functionality
-  document.addEventListener('DOMContentLoaded', function () {
-    const attachmentInput = document.getElementById('attachment');
-    const previewContainer = document.getElementById('attachment-preview');
-    const chatForm = document.getElementById('chat-form');
-    const chatMessageList = document.getElementById('chat-message-list');
-    let selectedFiles = [];
-
-    // Function to update the input files list
-    function updateInputFiles() {
-      const dataTransfer = new DataTransfer();
-
-      // Add the remaining files to the DataTransfer object
-      selectedFiles.forEach((file) => {
-        dataTransfer.items.add(file);
-      });
-
-      // Set the input's files to the new file list
-      attachmentInput.files = dataTransfer.files;
-    }
-
-    // Function to create preview for a single file
-    function createPreview(file, index) {
-      if (!file.type.match('image.*')) {
-        return; // Skip non-image files
-      }
-
-      const reader = new FileReader();
-
-      reader.onload = function (e) {
-        const previewItem = document.createElement('div');
-        previewItem.className = 'preview-item';
-
-        const img = document.createElement('img');
-        img.src = e.target.result;
-        img.alt = 'Attachment preview';
-
-        const removeButton = document.createElement('div');
-        removeButton.className = 'remove-preview';
-        removeButton.innerHTML = '×';
-        removeButton.dataset.index = index;
-        removeButton.addEventListener('click', function () {
-          removeFile(parseInt(this.dataset.index));
-        });
-
-        previewItem.appendChild(img);
-        previewItem.appendChild(removeButton);
-        previewContainer.appendChild(previewItem);
-      };
-
-      reader.readAsDataURL(file);
-    }
-
-    // Function to remove a file from the selection
-    function removeFile(index) {
-      selectedFiles.splice(index, 1);
-      updateInputFiles();
-      renderPreviews();
-    }
-
-    // Function to render all previews
-    function renderPreviews() {
-      previewContainer.innerHTML = ''; // Clear existing previews
-
-      if (selectedFiles.length > 0) {
-        // Show the preview container when files are selected
-        previewContainer.style.display = 'flex';
-
-        selectedFiles.forEach((file, index) => {
-          createPreview(file, index);
-        });
-
-        // Adjust the chat message list to account for the preview
-        // This gives a visual cue that the preview is taking space
-        chatMessageList.style.paddingBottom = '120px';
-      } else {
-        // Hide the preview container when no files are selected
-        previewContainer.style.display = 'none';
-
-        // Reset the chat message list padding
-        chatMessageList.style.paddingBottom = '0';
-      }
-    }
-
-    // Listen for file selection changes
-    attachmentInput.addEventListener('change', function () {
-      if (this.files.length > 0) {
-        // Add new files to our array
-        Array.from(this.files).forEach((file) => {
-          if (file.type.match('image.*')) {
-            selectedFiles.push(file);
-          }
-        });
-
-        renderPreviews();
-      }
-    });
-
-    // Reset attachment previews when form is submitted
-    chatForm.addEventListener('submit', function () {
-      setTimeout(() => {
-        selectedFiles = [];
-        renderPreviews(); // This will hide the preview and reset padding
-      }, 100);
-    });
-
-    // Initialize to hide the preview container
-    previewContainer.style.display = 'none';
-  });
-</script> -->
-
 <script>
+  // Socket initialization
   const form = document.querySelector('#chat-form');
   const messageContainer = document.querySelector('#chat-message-list');
   const chatTitleContainer = document.querySelector('#conversation-partner');
@@ -319,29 +209,36 @@
 
       attachments += '</div>';
 
+      // Check if message text is empty and handle accordingly
+      // If the message is empty, don't create the message-text div at all
+      const messageText = data.message.message || '';
+      const messageTextHtml = messageText.trim()
+        ? `<div class="message-text">${messageText}</div>`
+        : '';
+
       let messageHTML;
 
       // do not show avatar for loggedin user
       if (data.message.sender.id == loggedinUserId) {
         messageHTML = `<div class="message-row ${messageClass}"><div class="message-content">
-              <div class="message-text">${data.message.message}</div>
-              ${attachments}
-              <div class="message-time">${moment(
-                data.message.date_time
-              ).fromNow()}</div>
-            </div></div>`;
+            ${messageTextHtml}
+            ${attachments}
+            <div class="message-time">${moment(
+              data.message.date_time
+            ).fromNow()}</div>
+          </div></div>`;
       } else {
         messageHTML = `<div class="message-row ${messageClass}"><div class="message-content">
-              ${senderAvatar}
-              <div class="message-text">${data.message.message}</div>
-              ${attachments}
-              <div class="message-time">${moment(
-                data.message.date_time
-              ).fromNow()}</div>
-            </div></div>`;
+            ${senderAvatar}
+            ${messageTextHtml}
+            ${attachments}
+            <div class="message-time">${moment(
+              data.message.date_time
+            ).fromNow()}</div>
+          </div></div>`;
       }
 
-      // append the inoming message to message area as last item
+      // append the incoming message to message area as last item
       document
         .querySelector('#chat-message-list > .message-row:first-child')
         .insertAdjacentHTML('beforeBegin', messageHTML);
@@ -395,15 +292,22 @@
 
             attachments += '</div>';
 
+            // Check if message text is empty and handle accordingly
+            // If the message is empty, don't create the message-text div at all
+            const messageText = message.text || '';
+            const messageTextHtml = messageText.trim()
+              ? `<div class="message-text">${messageText}</div>`
+              : '';
+
             // final message html
             let messageHTML = `<div class="message-row ${messageClass}"><div class="message-content">
-                      ${showAvatar}
-                      <div class="message-text">${message.text}</div>
-                      ${attachments}
-                      <div class="message-time">${moment(
-                        message.date_time
-                      ).fromNow()}</div>
-                    </div></div>`;
+                    ${showAvatar}
+                    ${messageTextHtml}
+                    ${attachments}
+                    <div class="message-time">${moment(
+                      message.date_time
+                    ).fromNow()}</div>
+                  </div></div>`;
 
             allMessages += messageHTML;
             messageContainer.innerHTML = allMessages;
@@ -420,7 +324,6 @@
   }
 
   // message sending
-  // message sending
   form.onsubmit = async function (event) {
     event.preventDefault();
 
@@ -434,6 +337,14 @@
 
     // Double-check that files are added to the FormData
     const attachmentFiles = document.getElementById('attachment').files;
+
+    // Check if we have either a non-empty message or attachments
+    const messageText = formData.get('message').trim();
+    if (messageText === '' && attachmentFiles.length === 0) {
+      // Nothing to send, so don't submit
+      return false;
+    }
+
     // Clear any existing attachments from the FormData and re-add them
     formData.delete('attachment');
     for (let i = 0; i < attachmentFiles.length; i++) {
@@ -444,9 +355,6 @@
     formData.append('receiverName', participant.username);
     formData.append('avatar', participant.avatar || '');
     formData.append('conversationId', current_conversation_id);
-
-    // Debug: Log the FormData contents to ensure files are included
-    console.log('Files being sent:', attachmentFiles.length);
 
     // send the request to server
     let response = await fetch('/inbox/message', {
@@ -459,8 +367,12 @@
 
     if (!result.errors) {
       form.reset(); // reset the form
+      // Clear attachment preview
+      document.getElementById('attachment-preview').innerHTML = '';
+      document.getElementById('attachment-preview').style.display = 'none';
+      // Reset chat message list padding
+      document.getElementById('chat-message-list').style.paddingBottom = '0';
     } else {
-      console.error('Message sending error:', result.errors);
       sendMessageFailureToast.showToast();
     }
   };

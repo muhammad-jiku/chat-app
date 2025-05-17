@@ -1,7 +1,6 @@
 // external import
 const express = require('express');
-
-// internal import
+// internal imports
 const {
   getInbox,
   searchUser,
@@ -13,6 +12,7 @@ const { checkLogIn } = require('../middleware/common/checkLogIn');
 const decorateHtmlResponse = require('../middleware/common/decorateHtmlResponse');
 const attachmentUpload = require('../middleware/inbox/attachmentUpload');
 
+// router initialization
 const router = express.Router();
 
 // Inbox Page

@@ -124,7 +124,7 @@
           divElement.className += ' toastify-left';
           console.warn(
             'Property `positionLeft` will be depreciated in further versions. Please use `position` instead.'
-          );
+          ); // debugging log
         } else {
           // Default position
           divElement.className += ' toastify-right';
@@ -138,7 +138,7 @@
         // This is being deprecated in favor of using the style HTML DOM property
         console.warn(
           'DEPRECATION NOTICE: "backgroundColor" is being deprecated. Please use the "style.background" property.'
-        );
+        ); // debugging log
       }
 
       // Loop through our style object and apply styles to divElement

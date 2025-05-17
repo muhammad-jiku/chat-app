@@ -61,7 +61,7 @@
             const contentType = response.headers.get('content-type');
             if (contentType && contentType.includes('application/json')) {
               return response.json().then((data) => {
-                console.log('Logout successful:', data.message);
+                // console.log('Logout successful:', data.message);
                 window.location.href = '/';
               });
             } else {
@@ -70,7 +70,7 @@
             }
           })
           .catch((error) => {
-            console.error('Logout error:', error);
+            //  console.error('Logout error:', error);
             // Fallback redirect
             window.location.href = '/';
           });

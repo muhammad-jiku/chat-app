@@ -451,8 +451,15 @@ input[type='submit']:active {
 }
 
 .message-content img {
-  height: 48px;
+  height: 24px;
   width: auto;
+  /* margin-right: 2px; */
+}
+
+.attachments img {
+  height: 100px;
+  width: auto;
+  margin-right: 2px;
 }
 
 .you-message {
@@ -476,6 +483,11 @@ input[type='submit']:active {
 
 .message-row img:first-of-type {
   border-radius: 100%;
+  grid-row: span 2;
+}
+
+.attachments img:first-of-type {
+  border-radius: 0%;
   grid-row: span 2;
 }
 

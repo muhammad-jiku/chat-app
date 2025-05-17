@@ -1,25 +1,19 @@
-const uploader = require('../../utilities/multipleUploader');
+// external imports
 const path = require('path');
 const fs = require('fs');
+// internal import
+const uploader = require('../../utilities/multipleUploader');
 
 function attachmentUpload(req, res, next) {
-  // Debug log - what's the request like?
-  console.log('Attachment upload request received');
-
   // Check if the uploads directory exists in app root
   const uploadsDir = path.join(__dirname, '../../public/uploads/attachments');
 
-  // Log the path we're trying to use
-  console.log('Uploads directory path:', uploadsDir);
-
   // Double-check directory exists
   if (!fs.existsSync(uploadsDir)) {
-    console.log('Uploads directory does not exist, creating it now');
     try {
       fs.mkdirSync(uploadsDir, { recursive: true });
-      console.log('Successfully created uploads directory');
     } catch (err) {
-      console.error('Failed to create uploads directory:', err);
+      console.error('Failed to create uploads directory:', err); // debugging log
       return res.status(500).json({
         errors: {
           attachment: {
@@ -29,7 +23,7 @@ function attachmentUpload(req, res, next) {
       });
     }
   } else {
-    console.log('Uploads directory exists');
+    console.log('Uploads directory exists'); // debugging log
   }
 
   const upload = uploader(
@@ -44,12 +38,12 @@ function attachmentUpload(req, res, next) {
   console.log(
     'Initiating attachment upload, incoming request has files:',
     req.files ? req.files.length : 'No req.files'
-  );
+  ); // debugging log
 
   // Call the middleware function
   upload.array('attachment')(req, res, (err) => {
     if (err) {
-      console.error('Upload error:', err);
+      console.error('Upload error:', err); // debugging log
 
       // Give more specific error messages based on error type
       if (err.code === 'ENOENT') {
@@ -83,10 +77,11 @@ function attachmentUpload(req, res, next) {
     console.log(
       'Upload complete, files received:',
       req.files ? req.files.length : 'No files'
-    );
+    ); // debugging log
+
     if (req.files && req.files.length > 0) {
       req.files.forEach((file, index) => {
-        console.log(`File ${index + 1}: ${file.filename} (${file.mimetype})`);
+        console.log(`File ${index + 1}: ${file.filename} (${file.mimetype})`); // debugging log
       });
     }
 

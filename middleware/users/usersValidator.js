@@ -1,5 +1,7 @@
+// external imports
 const { check, validationResult } = require('express-validator');
 const createError = require('http-errors');
+// internal imports
 const path = require('path');
 const fs = require('fs');
 
@@ -63,8 +65,8 @@ const addUsersValidator = [
 const addUsersValidationHandler = function (req, res, next) {
   const errors = validationResult(req);
   const mappedErrors = errors.mapped();
-  console.log('errors', errors);
-  console.log('mapped errors', mappedErrors);
+  // console.log('errors', errors); // debugging log
+  // console.log('mapped errors', mappedErrors); // debugging log
 
   if (Object.keys(mappedErrors).length === 0) {
     next();
@@ -81,9 +83,9 @@ const addUsersValidationHandler = function (req, res, next) {
       // Use fs.unlink instead of requiring just the unlink method
       fs.unlink(filePath, (err) => {
         if (err) {
-          console.error('Error deleting file:', err);
+          console.error('Error deleting file:', err); // debugging log
         } else {
-          console.log(`Successfully deleted ${filePath}`);
+          console.log(`Successfully deleted ${filePath}`); // debugging log
         }
       });
     }

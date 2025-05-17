@@ -1,6 +1,5 @@
-// external imports
+// external import
 const express = require('express');
-
 // internal imports
 const {
   getUsers,
@@ -15,6 +14,7 @@ const {
 } = require('../middleware/users/usersValidator');
 const { checkLogIn, requireRole } = require('../middleware/common/checkLogIn');
 
+// router initialization
 const router = express.Router();
 
 // users page

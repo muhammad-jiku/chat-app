@@ -1,4 +1,4 @@
-// external import
+// external imports
 const express = require('express');
 const dotenv = require('dotenv');
 const mongoose = require('mongoose');
@@ -7,19 +7,17 @@ const path = require('path');
 const cookieParser = require('cookie-parser');
 const moment = require('moment');
 const http = require('http');
-
 // internal imports
 const logInRouter = require('./router/logInRouter');
 const registerRouter = require('./router/registerRouter');
 const usersRouter = require('./router/usersRouter');
 const inboxRouter = require('./router/inboxRouter');
-
-// internal import
 const {
   notFoundErrorHandler,
   errorHandler,
 } = require('./middleware/common/errorHandler');
 
+// app initialization
 const app = express();
 const server = http.createServer(app);
 dotenv.config();
@@ -38,10 +36,10 @@ mongoose
     useUnifiedTopology: true,
   })
   .then(() => {
-    console.log('Connection succcessful!');
+    console.log('Connection succcessful!'); // debugging log
   })
   .catch((err) => {
-    console.log(err);
+    console.log(err); // debugging log
   });
 
 // request parser
@@ -70,5 +68,5 @@ app.use(notFoundErrorHandler);
 app.use(errorHandler);
 
 server.listen(process.env.PORT, () => {
-  console.log(`server running at http://localhost:${process.env.PORT}`);
+  console.log(`server running at http://localhost:${process.env.PORT}`); // server running log
 });
