@@ -17,6 +17,7 @@ const {
   notFoundErrorHandler,
   errorHandler,
 } = require('./middleware/common/errorHandler');
+const socketSetup = require('./lib/socket');
 
 // app initialization
 const app = express();
@@ -25,23 +26,13 @@ dotenv.config();
 // Check for Vercel environment
 const isVercel = process.env.VERCEL || false;
 
-// Create HTTP server (only needed for non-Vercel environments)
-const server = isVercel ? null : http.createServer(app);
+// Create HTTP server (for both environments)
+const server = isVercel ? http.createServer(app) : http.createServer(app);
 
-// socket creation - adapted for Vercel
-if (isVercel) {
-  // In Vercel, we'll use a simplified socket setup
-  global.io = {
-    emit: (...args) => console.log('Socket would emit:', ...args), // debugging log
-    // Add other required socket methods as needed
-  };
-} else {
-  // Traditional socket.io setup for local development
-  const io = require('socket.io')(server);
-  global.io = io;
-}
+// Socket.io setup with enhanced compatibility
+global.io = socketSetup(server);
 
-// set comment as app locals
+// set moment as app locals
 app.locals.moment = moment;
 
 // database connection with improved error handling
@@ -51,10 +42,10 @@ mongoose
     useUnifiedTopology: true,
   })
   .then(() => {
-    console.log('MongoDB connection successful!'); // debugging log
+    console.log('MongoDB connection successful!');
   })
   .catch((err) => {
-    console.error('MongoDB connection error:', err); // debugging log
+    console.error('MongoDB connection error:', err);
   });
 
 // request parser
@@ -69,17 +60,17 @@ const viewsPath = path.join(__dirname, 'views');
 app.set('views', viewsPath);
 
 // Debug views directory for troubleshooting
-console.log('Views directory set to:', viewsPath); // debugging log
+console.log('Views directory set to:', viewsPath);
 try {
   if (fs.existsSync(viewsPath)) {
-    console.log('Views directory exists'); // debugging log
+    console.log('Views directory exists');
     const files = fs.readdirSync(viewsPath);
-    console.log('Views directory contents:', files); // debugging log
+    console.log('Views directory contents:', files);
   } else {
-    console.log('Views directory does not exist'); // debugging log
+    console.log('Views directory does not exist');
   }
 } catch (err) {
-  console.error('Error checking views directory:', err); // debugging log
+  console.error('Error checking views directory:', err);
 }
 
 // set static folder with proper caching headers
@@ -101,6 +92,32 @@ app.use((req, res, next) => {
   next();
 });
 
+// Add environment flag for middleware
+app.use((req, res, next) => {
+  req.isVercelEnvironment = isVercel;
+  next();
+});
+
+// Add placeholder for missing avatars
+app.use((req, res, next) => {
+  if (req.path.startsWith('/uploads/') && isVercel) {
+    // For Vercel environment, serve a placeholder for missing uploads
+    const placeholderImage = path.join(
+      __dirname,
+      'public',
+      'images',
+      'placeholder.png'
+    );
+    if (fs.existsSync(placeholderImage)) {
+      return res.sendFile(placeholderImage);
+    } else {
+      // If even the placeholder doesn't exist, return a 204 No Content
+      return res.status(204).end();
+    }
+  }
+  next();
+});
+
 // routing setup
 app.use('/', logInRouter);
 app.use('/register', registerRouter);
@@ -109,7 +126,11 @@ app.use('/inbox', inboxRouter);
 
 // Add a simple health check endpoint for monitoring
 app.get('/health', (req, res) => {
-  res.status(200).json({ status: 'ok', environment: process.env.NODE_ENV });
+  res.status(200).json({
+    status: 'ok',
+    environment: process.env.NODE_ENV,
+    vercel: isVercel ? 'true' : 'false',
+  });
 });
 
 // 404 not found url handling middleware
@@ -120,11 +141,11 @@ app.use(errorHandler);
 
 // Export for Vercel serverless functions
 if (isVercel) {
-  // Export the Express app for Vercel
+  // For Vercel, export the app
   module.exports = app;
 } else {
   // Traditional server listening for local development
   server.listen(process.env.PORT, () => {
-    console.log(`Server running at http://localhost:${process.env.PORT}`); // server running log
+    console.log(`Server running at http://localhost:${process.env.PORT}`);
   });
 }
