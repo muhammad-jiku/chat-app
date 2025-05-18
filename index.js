@@ -17,7 +17,7 @@ const {
   notFoundErrorHandler,
   errorHandler,
 } = require('./middleware/common/errorHandler');
-const socketSetup = require('./lib/socket');
+// const socketSetup = require('./lib/socket');
 
 // app initialization
 const app = express();
@@ -29,8 +29,10 @@ const isVercel = process.env.VERCEL || false;
 // Create HTTP server (for both environments)
 const server = isVercel ? http.createServer(app) : http.createServer(app);
 
-// Socket.io setup with enhanced compatibility
-global.io = socketSetup(server);
+// // Socket.io setup with enhanced compatibility
+// global.io = socketSetup(server);
+const io = require('socket.io')(server);
+global.io = io;
 
 // set moment as app locals
 app.locals.moment = moment;
